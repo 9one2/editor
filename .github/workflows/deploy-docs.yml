@@ -1,0 +1,48 @@
+name: Build and Deploy VitePress
+
+on:
+  repository_dispatch: # 'types' 필터를 제거하여 Strapi가 보내는 모든 dispatch를 받도록 함
+    # types: [strapi-webhook] # 이 부분을 주석 처리하거나 삭제
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub Context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: debug
+    steps:
+      # (선택 사항, 하지만 권장) Strapi에서 보낸 이벤트인지 확인하는 단계 추가
+      - name: Check Strapi Event
+        if: github.event.client_payload.event == 'entry.publish' && github.event.client_payload.model == 'articles' # 'articles'는 실제 모델명(API ID)으로 변경
+        run: echo "Strapi 'entry.publish' event for 'articles' model received. Proceeding with build."
+      # 만약 위 if 조건이 false면 이후 단계는 실행되지 않도록 할 수 있습니다.
+      # 또는, job 전체에 if 조건을 걸 수도 있습니다:
+      # jobs:
+      #   build:
+      #     if: github.event.client_payload.event == 'entry.publish' && github.event.client_payload.model == 'articles'
+
+
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: npm ci # 또는 yarn install 등 프로젝트에 맞게
+      - name: Build VitePress Site
+        run: npm run docs:build # 또는 yarn docs:build 등
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v3
+      - name: Upload to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .vitepress/dist # VitePress 빌드 결과물 경로
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v3 

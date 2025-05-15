@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이지윅 에디터 with Strapi</title>
+    <!-- Toast UI Editor CSS -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>새 콘텐츠 작성</h1>
+
+        <div class="form-group">
+            <label for="title">제목:</label>
+            <input type="text" id="title" name="title" placeholder="제목을 입력하세요">
+        </div>
+
+        <div class="form-group">
+            <label for="editor">내용:</label>
+            <div id="editor"></div>
+        </div>
+
+        <button id="saveButton">Strapi에 저장</button>
+        <p id="statusMessage"></p>
+    </div>
+
+    <!-- Toast UI Editor JavaScript -->
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
